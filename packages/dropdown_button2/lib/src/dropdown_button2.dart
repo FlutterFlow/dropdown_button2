@@ -196,12 +196,12 @@ class _DropdownMenuItemButtonState<T> extends State<_DropdownMenuItemButton<T>> 
       child: widget.route.items[widget.itemIndex],
     );
     // An [InkWell] is added to the item only if it is enabled
-    // isNoSelectedItem to avoid first item highlight when no item selected
     if (dropdownMenuItem.enabled) {
       final bool isSelectedItem =
           !widget.route.isNoSelectedItem && widget.itemIndex == widget.route.selectedIndex;
+      final bool isFirstItem = widget.route.isNoSelectedItem && widget.itemIndex == 0;
       child = InkWell(
-        autofocus: isSelectedItem,
+        autofocus: isSelectedItem || isFirstItem,
         enableFeedback: widget.enableFeedback,
         onTap: _handleOnTap,
         onFocusChange: _handleFocusChange,
@@ -1418,12 +1418,7 @@ class DropdownButton2State<T> extends State<DropdownButton2<T>> with WidgetsBind
     );
 
     _isMenuOpen.value = true;
-    // This is a temporary fix for the "dropdown menu steal the focus from the
-    // underlying button" issue, until share focus is fixed in flutter. see #152.
-    // ignore: always_specify_types
-    Future.delayed(const Duration(milliseconds: 20), () {
-      _focusNode?.requestFocus();
-    });
+    _focusNode?.requestFocus();
     navigator.push(_dropdownRoute!).then<void>((_DropdownRouteResult<T>? newValue) {
       _removeDropdownRoute();
       _isMenuOpen.value = false;
